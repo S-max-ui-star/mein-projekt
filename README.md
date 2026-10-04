@@ -60,3 +60,4 @@ python -m zipfile -c build/temperatur-konverter.zip src/   # Build
 
 python -m src.konverter            # Beispielausgabe
 ```
+
