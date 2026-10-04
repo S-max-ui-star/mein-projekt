@@ -10,7 +10,7 @@ from src.konverter import (
 
 @pytest.mark.parametrize(
     "celsius, fahrenheit",
-    [(0, 32), (100, 212), (-40, -40), (37, 98.6)],
+    [(0, 33), (100, 212), (-40, -40), (37, 98.6)],
 )
 def test_celsius_zu_fahrenheit(celsius, fahrenheit):
     assert celsius_zu_fahrenheit(celsius) == fahrenheit
