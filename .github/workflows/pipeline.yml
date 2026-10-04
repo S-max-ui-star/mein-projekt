@@ -1,0 +1,103 @@
+name: CI/CD
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+env:
+  PYTHON_VERSION: "3.12"
+  ARTIFACT_NAME: temperatur-konverter
+
+# Minimale Rechte global, Deploy-Job erweitert sie gezielt
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Code auschecken
+        uses: actions/checkout@v4
+
+      - name: Python einrichten
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Pip-Cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
+          restore-keys: ${{ runner.os }}-pip-
+
+      - name: Dependencies installieren
+        run: python -m pip install -r requirements.txt
+
+      - name: Tests ausführen
+        run: python -m pytest -v
+
+  build:
+    name: Paket bauen
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Code auschecken
+        uses: actions/checkout@v4
+
+      - name: Python einrichten
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Paket bauen
+        run: |
+          mkdir -p build
+          python -m zipfile -c "build/${{ env.ARTIFACT_NAME }}.zip" src/
+
+      - name: Paket hochladen
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.ARTIFACT_NAME }}
+          path: build/
+
+  deploy:
+    name: Deployment (Release)
+    needs: build
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment: production
+    permissions:
+      contents: write
+      actions: read
+    steps:
+      - name: Paket herunterladen
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ env.ARTIFACT_NAME }}
+          path: build/
+
+      - name: Zugangsdaten prüfen
+        env:
+          DEPLOY_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
+        run: |
+          if [ -z "$DEPLOY_TOKEN" ]; then
+            echo "::error::Secret DEPLOY_TOKEN fehlt"
+            exit 1
+          fi
+          echo "Token-Länge: ${#DEPLOY_TOKEN}"
+
+      - name: Deployment-Ziel anzeigen
+        run: echo "Deploy nach ${{ vars.DEPLOY_TARGET }}"
+
+      - name: Release erstellen
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          gh release create "v1.0.${{ github.run_number }}" \
+            --title "Version 1.0.${{ github.run_number }}" \
+            --notes "Automatisches Deployment aus GitHub Actions (Commit ${{ github.sha }})" \
+            build/*.zip
