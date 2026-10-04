@@ -44,15 +44,15 @@ Alle Punkte sind in [`.github/workflows/pipeline.yml`](../.github/workflows/pipe
 - [x] Artifact wird in `build` hochgeladen und in `deploy` heruntergeladen
 - [x] Cache mit `hashFiles()` im Key
 - [x] Secret `DEPLOY_TOKEN` wird verwendet, im Log steht nur die Länge
-- [ ] Environment `production` mit Required reviewers und Branch-Regel *(in den GitHub-Settings anlegen)*
+- [x] Environment `production` mit Required reviewers und Branch-Regel
 - [x] `permissions: contents: read` global, im Deploy-Job erweitert
 - [x] `if`-Bedingung am Deploy-Job
 - [x] Deployment nur auf `main` und nur nach grünen Tests
-- [ ] Release mit Paket als Asset automatisch entstanden *(nach dem ersten Push prüfen)*
+- [x] Release mit Paket als Asset automatisch entstanden
 - [x] README erklärt Zweck, Pipeline, Trigger, Secrets, Deployment und lokales Ausführen
 - [x] Keine Secret-Werte in Logs, README, Commits oder Artifacts
 - [x] Alle sechs Challenge-Probleme dokumentiert und behoben
 
-## Links (nach dem Push ausfüllen)
-- Repository: `https://github.com/<user>/mein-projekt`
-- Release: `https://github.com/<user>/mein-projekt/releases/tag/v1.0.<n>`
+## Links
+- Repository: https://github.com/S-max-ui-star/mein-projekt
+- Release: https://github.com/S-max-ui-star/mein-projekt/releases/tag/v1.0.1

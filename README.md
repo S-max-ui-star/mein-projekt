@@ -46,7 +46,7 @@ So prüfst du es:
 
 ## Lokal ausführen
 ```bash
-git clone https://github.com/<dein-user>/mein-projekt.git
+git clone https://github.com/S-max-ui-star/mein-projekt.git
 cd mein-projekt
 
 python3 -m venv .venv
